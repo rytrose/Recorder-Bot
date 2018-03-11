@@ -1,12 +1,12 @@
-#define SWITCH 13
-#define FLOW_BUTTON 12
-#define VALVE 11
-#define BUTTON_1 10
-#define FINGER_1 9
-#define BUTTON_2 8
-#define FINGER_2 7
-#define BUTTON_3 6
-#define FINGER_3 5
+#define SWITCH 12
+#define FLOW_BUTTON 11
+#define VALVE 10
+#define BUTTON_1 9
+#define FINGER_1 8
+#define BUTTON_2 7
+#define FINGER_2 6
+#define BUTTON_3 5
+#define FINGER_3 4
 
 void setup() {
 
@@ -45,7 +45,7 @@ void loop() {
     digitalWrite(FINGER_2, digitalRead(BUTTON_2));
     digitalWrite(FINGER_3, digitalRead(BUTTON_3));
     // Read/write valve
-    digitalWrite(VALVE, digitalRead(FLOW_BUTTON);
+    digitalWrite(VALVE, digitalRead(FLOW_BUTTON));\
   }
   
 }
