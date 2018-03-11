@@ -36,18 +36,31 @@ int mspb = 448;
 
 void loop() {
   state = digitalRead(SWITCH);
-  digitalWrite(LED_BUILTIN, state);
-
-  if(state) playSandstorm();
+  
+  if(state) readFromMax(); // playSandstorm();
   else {
     // Read/write fingers
     digitalWrite(FINGER_1, digitalRead(BUTTON_1));
     digitalWrite(FINGER_2, digitalRead(BUTTON_2));
     digitalWrite(FINGER_3, digitalRead(BUTTON_3));
     // Read/write valve
-    digitalWrite(VALVE, digitalRead(FLOW_BUTTON));\
+    digitalWrite(VALVE, digitalRead(FLOW_BUTTON));
   }
   
+}
+
+void readFromMax() {
+  while(Serial.available() > 0) {
+    byte b = Serial.read();
+    int val = (int) b;
+    if(val < 2 && val > -1) digitalWrite(VALVE, val);
+    else {      
+      // Set fingers
+      digitalWrite(FINGER_1, (b & (1 << 7-1)) != 0);
+      digitalWrite(FINGER_1, (b & (1 << 6-1)) != 0);
+      digitalWrite(FINGER_1, (b & (1 << 5-1)) != 0); 
+    }
+  } 
 }
 
 void playSandstorm() {
