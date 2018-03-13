@@ -32,11 +32,15 @@ void setup() {
 }
 
 bool state = false;
+bool valve = false;
+bool f_1 = false;
+bool f_2 = false;
+bool f_3 = false;
 int mspb = 448;
 
 void loop() {
   state = digitalRead(SWITCH);
-//  digitalWrite(LED_BUILTIN, state);
+  digitalWrite(LED_BUILTIN, state);
   
   if(state) readFromMax(); // playSandstorm();
   else {
@@ -51,11 +55,6 @@ void loop() {
   
 }
 
-bool valve = false;
-bool f_1 = false;
-bool f_2 = false;
-bool f_3 = false;
-
 void readFromMax() {
   while(Serial.available() > 0) {
     int val = Serial.parseInt();
@@ -63,7 +62,7 @@ void readFromMax() {
     
     if (Serial.read() == '\n') {
       if(val < 2 && val > -1) {
-        valve = val;
+        valve = !val;
         digitalWrite(VALVE, valve);
       }
       else {     
@@ -71,7 +70,6 @@ void readFromMax() {
         f_1 = (b & (1 << 7-1)) != 0;
         f_2 = (b & (1 << 6-1)) != 0;
         f_3 = (b & (1 << 5-1)) != 0;
-        digitalWrite(LED_BUILTIN, f_3);
         digitalWrite(FINGER_1, f_1);
         digitalWrite(FINGER_2, f_2);
         digitalWrite(FINGER_3, f_3); 
