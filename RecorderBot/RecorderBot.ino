@@ -1,17 +1,21 @@
 #include <Servo.h>
 
-#define SWITCH 12
-#define FLOW_BUTTON 11
-#define VALVE 10
-#define BUTTON_1 9
-#define FINGER_1 8
-#define BUTTON_2 7
-#define FINGER_2 6
-#define BUTTON_3 5
-#define FINGER_3 4
 #define VIBRATO 3
+#define FINGER_3 4
+#define HEAD_SERVO 9
+#define FINGER_2 6
+#define BUTTON_2 7
+#define FINGER_1 8
+#define BUTTON_1 5
+#define VALVE 10
+#define FLOW_BUTTON 11
+#define SWITCH 12
+#define BUTTON_3 13
 
+String msg_buffer;
+String message_type;
 Servo servo;
+Servo head_servo;
 
 void setup() {
   Serial.begin(9600);
@@ -34,7 +38,10 @@ void setup() {
   // For fun
   pinMode(LED_BUILTIN, OUTPUT);
 
-  servo.attach(3);
+
+  // Servos
+  servo.attach(VIBRATO);
+  head_servo.attach(HEAD_SERVO);
 }
 
 // Button pressing (0) or reading from Max (1) states
@@ -60,9 +67,9 @@ unsigned long vibratoWaitTime = mspb;
 
 void loop() {
   state = digitalRead(SWITCH);
-  digitalWrite(LED_BUILTIN, vibrato);
+  //digitalWrite(LED_BUILTIN, vibrato);
   
-  if(state) readFromMax();
+  if(true) readFromMax();
   else {
     // Read/write fingers
     digitalWrite(FINGER_1, !digitalRead(BUTTON_1));
@@ -79,7 +86,41 @@ void loop() {
 }
 
 void readFromMax() {
-  while(Serial.available() > 0) {
+  while (Serial.available() > 0)
+  {
+    char inByte = Serial.read(); // Read the incoming byte.
+
+    if (inByte != '\n') // If the byte is NOT an ASCII 10 \n character, add it to the buffer.
+    {
+      msg_buffer += inByte;
+    }
+    else // ... otherwise, if it is an ASCII 10 \n character, the buffer is full so decode it.
+    {
+
+      ///*** PUT NEW COMMANDS HERE ****///
+      message_type = "finger"; // message type to test
+      if(msg_buffer.startsWith(message_type)){
+        msg_buffer.replace((message_type + " "), ""); // get rid of message prefix
+        int val = msg_buffer.toInt();
+        msg_buffer = ""; // Clear the buffer.
+      }
+
+      message_type = "head"; // message type to test
+      if(msg_buffer.startsWith(message_type)){
+        msg_buffer.replace((message_type + " "), ""); // get rid of message prefix
+        int val = msg_buffer.toInt();
+        //Serial.println(val);
+        if(val >= 0 && val <= 180){
+          digitalWrite(LED_BUILTIN, HIGH);
+          head_servo.write(val);
+        }
+        msg_buffer = ""; // Clear the buffer.
+      }
+      
+      msg_buffer = ""; // Clear the buffer.
+    }
+  }
+  /*while(Serial.available() > 0) {
     int val = Serial.parseInt();
     char b = (char) val;
     
@@ -98,7 +139,7 @@ void readFromMax() {
         digitalWrite(FINGER_3, f_3); 
       }
     } 
-  }
+  }*/
 }
 
 void setValve(bool value) {
@@ -118,7 +159,7 @@ void vibratoHandler() {
 
   if(vibrato) {
     servo.write(115 + (50 * ((float)(millis() % vibratoFreq) / vibratoFreq)));
-    Serial.println(115 + (50 * ((float)(millis() % vibratoFreq) / vibratoFreq)));
+    //Serial.println(115 + (50 * ((float)(millis() % vibratoFreq) / vibratoFreq)));
   }
   else servo.write(90);
 }
