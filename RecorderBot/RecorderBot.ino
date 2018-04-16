@@ -21,33 +21,18 @@ String message_type;
 Servo vibrato_servo;
 Servo head_servo;
 
-void setup() {
-  Serial.begin(9600);
-
-  demoOne();
-
-  // Solenoid
-  pinMode(VALVE, OUTPUT);
-
-  // Fingers
-  pinMode(FINGER_1, OUTPUT);
-  pinMode(FINGER_2, OUTPUT);
-  pinMode(FINGER_3, OUTPUT);
-  pinMode(FINGER_4, OUTPUT);
-  pinMode(FINGER_5, OUTPUT);
-  pinMode(FINGER_6, OUTPUT);
-  pinMode(FINGER_7, OUTPUT);
-
-  // For fun
-  pinMode(LED_BUILTIN, OUTPUT);
-
-  // Servos
-  vibrato_servo.attach(VIBRATO);
-  head_servo.attach(HEAD_SERVO);
-}
-
 // Valve open/closed
 bool valve = false;
+
+// U in/out or off
+String u_state = "OFF";
+bool u_in_1 = false;
+bool u_in_2 = false;
+
+// Start time of current movement
+unsigned long motorStartTime = 0;
+// Time to wait for linear actuator to move
+unsigned long motorWaitTime = 1200;
 
 // Fingers open/closed
 bool f_1 = false;
@@ -68,6 +53,32 @@ unsigned long articulationStartTime = 0;
 // Time to wait until vibrato starts
 unsigned long vibratoWaitTime = mspb;
 
+void setup() {
+  Serial.begin(9600);
+
+  // Solenoid
+  pinMode(VALVE, OUTPUT);
+
+  // Fingers
+  pinMode(FINGER_1, OUTPUT);
+  pinMode(FINGER_2, OUTPUT);
+  pinMode(FINGER_3, OUTPUT);
+  pinMode(FINGER_4, OUTPUT);
+  pinMode(FINGER_5, OUTPUT);
+  pinMode(FINGER_6, OUTPUT);
+  pinMode(FINGER_7, OUTPUT);
+
+  // For fun
+  pinMode(LED_BUILTIN, OUTPUT);
+
+  // Servos
+  vibrato_servo.attach(VIBRATO);
+  head_servo.attach(HEAD_SERVO);
+
+  // Set motor in
+  setU(false);
+}
+
 void loop() {
   // Read commands in from Max
   readFromMax();
@@ -84,7 +95,15 @@ void loop() {
   digitalWrite(FINGER_5, f_5);
   digitalWrite(FINGER_6, f_6);
   digitalWrite(FINGER_7, f_7);
-  
+
+  // Enable motor
+  analogWrite(LIN_ACT_EN, 255);
+  // Write to motor
+  digitalWrite(LIN_ACT_IN1, u_in_1);
+  digitalWrite(LIN_ACT_IN2, u_in_2);
+
+  // Handle motor on/off
+  motorHandler();
 }
 
 void readFromMax() {
@@ -137,6 +156,14 @@ void readFromMax() {
         }
         msg_buffer = ""; // Clear the buffer.
       }
+
+      message_type = "motor"; // message type to test
+      if(msg_buffer.startsWith(message_type)){
+        msg_buffer.replace((message_type + " "), ""); // get rid of message prefix
+        int val = msg_buffer.toInt();
+        setU(val);
+        msg_buffer = ""; // Clear the buffer.
+      }
       
       msg_buffer = ""; // Clear the buffer.
     }
@@ -168,10 +195,38 @@ void vibratoHandler() {
   if(valve && !vibrato && (millis() - articulationStartTime) > vibratoWaitTime) vibrato = true;
 
   if(vibrato) {
-    vibrato_servo.write(115 + (50 * ((float)(millis() % vibratoFreq) / vibratoFreq)));
+    vibrato_servo.write(90 + (90 * ((float)(millis() % vibratoFreq) / vibratoFreq)));
     //Serial.println(115 + (50 * ((float)(millis() % vibratoFreq) / vibratoFreq)));
   }
-  else vibrato_servo.write(90);
+  else vibrato_servo.write(180);
+}
+
+void setU(bool value) {
+  // Move motor out
+  if(u_state != "OUT" && value == 1) {
+    // Move the motor out
+    u_in_1 = false;
+    u_in_2 = true;
+    u_state = "OUT";
+    motorStartTime = millis();
+  }
+
+  // Move motor in
+  if(u_state != "IN" && value == 0) {
+    // Move the motors out
+    u_in_1 = true;
+    u_in_2 = false;
+    u_state = "IN";
+    motorStartTime = millis();
+  }
+}
+
+void motorHandler() {
+  if(u_state != "OFF" && (millis() - motorStartTime) > motorWaitTime) {
+    u_in_1 = false;
+    u_in_2 = false;
+    u_state = "OFF";
+  }
 }
 
 void demoOne()

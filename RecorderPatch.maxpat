@@ -38,6 +38,57 @@
 		"subpatcher_template" : "",
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-28",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 276.0, 750.0, 91.0, 22.0 ],
+					"style" : "",
+					"text" : "send toArduino"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-27",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 276.0, 704.0, 89.0, 22.0 ],
+					"style" : "",
+					"text" : "prepend motor"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-25",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 335.0, 662.0, 29.5, 22.0 ],
+					"style" : "",
+					"text" : "1"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-9",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 276.0, 662.0, 29.5, 22.0 ],
+					"style" : "",
+					"text" : "0"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-50",
 					"maxclass" : "message",
 					"numinlets" : 2,
@@ -98,7 +149,7 @@
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 509.0, 562.0, 50.0, 35.0 ],
 					"style" : "",
-					"text" : "fingers 240"
+					"text" : "fingers 160"
 				}
 
 			}
@@ -292,7 +343,7 @@
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 382.0, 479.0, 50.0, 22.0 ],
 					"style" : "",
-					"text" : "240"
+					"text" : "160"
 				}
 
 			}
@@ -448,7 +499,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 154.0, 103.0, 531.0, 491.0 ],
+						"rect" : [ 754.0, 79.0, 652.0, 787.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -475,7 +526,6 @@
 						"tags" : "",
 						"style" : "",
 						"subpatcher_template" : "",
-						"visible" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
 									"id" : "obj-16",
@@ -646,7 +696,7 @@
 									"presentation" : 1,
 									"presentation_rect" : [ 701.0, 444.0, 47.0, 22.0 ],
 									"style" : "",
-									"text" : "port c"
+									"text" : "port d"
 								}
 
 							}
@@ -966,6 +1016,20 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-27", 0 ],
+					"source" : [ "obj-25", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-28", 0 ],
+					"source" : [ "obj-27", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-6", 0 ],
 					"source" : [ "obj-3", 0 ]
 				}
@@ -1104,15 +1168,15 @@
 				}
 
 			}
- ],
-		"dependency_cache" : [ 			{
-				"name" : "midiToFingers.js",
-				"bootpath" : "~/OneDrive - Georgia Institute of Technology/Documents/MUSI 6203/Recorder Bot",
-				"patcherrelativepath" : ".",
-				"type" : "TEXT",
-				"implicit" : 1
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-27", 0 ],
+					"source" : [ "obj-9", 0 ]
+				}
+
 			}
  ],
+		"dependency_cache" : [  ],
 		"autosave" : 0
 	}
 
