@@ -20,8 +20,11 @@
 #define HEAD_GREEN 10
 #define HEAD_BLUE 9
 
+// Serial message variables
 String msg_buffer;
 String message_type;
+
+// Servo objects
 Servo vibrato_servo;
 Servo head_servo;
 
@@ -130,6 +133,7 @@ void loop() {
   motorHandler();
 }
 
+// Read the serial port
 void readFromMax() {
   while (Serial.available() > 0)
   {
@@ -170,7 +174,7 @@ void readFromMax() {
         msg_buffer = ""; // Clear the buffer.
       }
 
-      message_type = "head"; // message type to test
+      message_type = "head";
       if(msg_buffer.startsWith(message_type)){
         msg_buffer.replace((message_type + " "), ""); // get rid of message prefix
         int val = msg_buffer.toInt();
@@ -181,7 +185,7 @@ void readFromMax() {
         msg_buffer = ""; // Clear the buffer.
       }
 
-      message_type = "motor"; // message type to test
+      message_type = "motor"; 
       if(msg_buffer.startsWith(message_type)){
         msg_buffer.replace((message_type + " "), ""); // get rid of message prefix
         int val = msg_buffer.toInt();
@@ -189,21 +193,21 @@ void readFromMax() {
         msg_buffer = ""; // Clear the buffer.
       }
 
-      message_type = "red"; // message type to test
+      message_type = "red"; 
       if(msg_buffer.startsWith(message_type)){
         msg_buffer.replace((message_type + " "), ""); // get rid of message prefix
         red = msg_buffer.toInt();
         msg_buffer = ""; // Clear the buffer.
       }
 
-      message_type = "green"; // message type to test
+      message_type = "green"; 
       if(msg_buffer.startsWith(message_type)){
         msg_buffer.replace((message_type + " "), ""); // get rid of message prefix
         green = msg_buffer.toInt();
         msg_buffer = ""; // Clear the buffer.
       }
 
-      message_type = "blue"; // message type to test
+      message_type = "blue";
       if(msg_buffer.startsWith(message_type)){
         msg_buffer.replace((message_type + " "), ""); // get rid of message prefix
         blue = msg_buffer.toInt();
