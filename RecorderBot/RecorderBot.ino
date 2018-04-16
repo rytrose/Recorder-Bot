@@ -1,7 +1,7 @@
 #include <Servo.h>
 
-#define LIN_ACT_EN 10
-#define LIN_ACT_IN1 9
+#define LIN_ACT_EN 13
+#define LIN_ACT_IN1 12
 #define LIN_ACT_IN2 8
 
 #define FINGER_1 22
@@ -16,6 +16,10 @@
 #define VIBRATO 6
 #define HEAD_SERVO 5
 
+#define HEAD_RED 11
+#define HEAD_GREEN 10
+#define HEAD_BLUE 9
+
 String msg_buffer;
 String message_type;
 Servo vibrato_servo;
@@ -28,6 +32,11 @@ bool valve = false;
 String u_state = "OFF";
 bool u_in_1 = false;
 bool u_in_2 = false;
+
+// Color values
+int red = 0;
+int blue = 0;
+int green = 0;
 
 // Start time of current movement
 unsigned long motorStartTime = 0;
@@ -68,6 +77,16 @@ void setup() {
   pinMode(FINGER_6, OUTPUT);
   pinMode(FINGER_7, OUTPUT);
 
+  // Motor pins
+  pinMode(LIN_ACT_EN, OUTPUT);
+  pinMode(LIN_ACT_IN1, OUTPUT);
+  pinMode(LIN_ACT_IN2, OUTPUT);
+
+  // Head lights
+  pinMode(HEAD_RED, OUTPUT);
+  pinMode(HEAD_BLUE, OUTPUT);
+  pinMode(HEAD_GREEN, OUTPUT);
+
   // For fun
   pinMode(LED_BUILTIN, OUTPUT);
 
@@ -97,10 +116,15 @@ void loop() {
   digitalWrite(FINGER_7, f_7);
 
   // Enable motor
-  analogWrite(LIN_ACT_EN, 255);
+  digitalWrite(LIN_ACT_EN, HIGH);
   // Write to motor
   digitalWrite(LIN_ACT_IN1, u_in_1);
   digitalWrite(LIN_ACT_IN2, u_in_2);
+
+  // Write lights
+  analogWrite(HEAD_RED, red);
+  analogWrite(HEAD_GREEN, green);
+  analogWrite(HEAD_BLUE, blue);
 
   // Handle motor on/off
   motorHandler();
@@ -162,6 +186,27 @@ void readFromMax() {
         msg_buffer.replace((message_type + " "), ""); // get rid of message prefix
         int val = msg_buffer.toInt();
         setU(val);
+        msg_buffer = ""; // Clear the buffer.
+      }
+
+      message_type = "red"; // message type to test
+      if(msg_buffer.startsWith(message_type)){
+        msg_buffer.replace((message_type + " "), ""); // get rid of message prefix
+        red = msg_buffer.toInt();
+        msg_buffer = ""; // Clear the buffer.
+      }
+
+      message_type = "green"; // message type to test
+      if(msg_buffer.startsWith(message_type)){
+        msg_buffer.replace((message_type + " "), ""); // get rid of message prefix
+        green = msg_buffer.toInt();
+        msg_buffer = ""; // Clear the buffer.
+      }
+
+      message_type = "blue"; // message type to test
+      if(msg_buffer.startsWith(message_type)){
+        msg_buffer.replace((message_type + " "), ""); // get rid of message prefix
+        blue = msg_buffer.toInt();
         msg_buffer = ""; // Clear the buffer.
       }
       
