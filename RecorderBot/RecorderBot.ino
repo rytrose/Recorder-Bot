@@ -1,6 +1,6 @@
 #include <Servo.h>
 
-#define LIN_ACT_EN 13
+#define LIN_ACT_EN 3
 #define LIN_ACT_IN1 12
 #define LIN_ACT_IN2 8
 
@@ -33,6 +33,7 @@ bool valve = false;
 
 // U in/out or off
 String u_state = "OFF";
+int motorSpeed = 255;
 bool u_in_1 = false;
 bool u_in_2 = false;
 
@@ -119,7 +120,7 @@ void loop() {
   digitalWrite(FINGER_7, f_7);
 
   // Enable motor
-  digitalWrite(LIN_ACT_EN, HIGH);
+  analogWrite(LIN_ACT_EN, motorSpeed);
   // Write to motor
   digitalWrite(LIN_ACT_IN1, u_in_1);
   digitalWrite(LIN_ACT_IN2, u_in_2);
@@ -190,6 +191,14 @@ void readFromMax() {
         msg_buffer.replace((message_type + " "), ""); // get rid of message prefix
         int val = msg_buffer.toInt();
         setU(val);
+        msg_buffer = ""; // Clear the buffer.
+      }
+
+      message_type = "speed"; 
+      if(msg_buffer.startsWith(message_type)){
+        msg_buffer.replace((message_type + " "), ""); // get rid of message prefix
+        int val = msg_buffer.toInt();
+        motorSpeed = val;
         msg_buffer = ""; // Clear the buffer.
       }
 
