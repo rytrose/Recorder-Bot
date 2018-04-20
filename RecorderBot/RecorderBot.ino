@@ -42,11 +42,6 @@ int red = 0;
 int blue = 0;
 int green = 0;
 
-// Start time of current movement
-unsigned long motorStartTime = 0;
-// Time to wait for linear actuator to move
-unsigned long motorWaitTime = 1200;
-
 // Fingers open/closed
 bool f_1 = false;
 bool f_2 = false;
@@ -99,7 +94,7 @@ void setup() {
   head_servo.attach(HEAD_SERVO);
 
   // Set motor in
-  setU(false);
+  setU(2);
 }
 
 void loop() {
@@ -129,9 +124,6 @@ void loop() {
   analogWrite(HEAD_RED, red);
   analogWrite(HEAD_GREEN, green);
   analogWrite(HEAD_BLUE, blue);
-
-  // Handle motor on/off
-  motorHandler();
 }
 
 // Read the serial port
@@ -259,31 +251,28 @@ void vibratoHandler() {
   else vibrato_servo.write(180);
 }
 
-void setU(bool value) {
-  // Move motor out
-  if(u_state != "OUT" && value == 1) {
-    // Move the motor out
+void setU(int value) {
+  // Turn motor off
+  if(value == 0) {
+    // Stop the motor
     u_in_1 = false;
-    u_in_2 = true;
-    u_state = "OUT";
-    motorStartTime = millis();
+    u_in_2 = false;
+    u_state = "OFF";
   }
 
   // Move motor in
-  if(u_state != "IN" && value == 0) {
+  if(u_state != "IN" && value == 1) {
     // Move the motors out
     u_in_1 = true;
     u_in_2 = false;
     u_state = "IN";
-    motorStartTime = millis();
   }
-}
-
-void motorHandler() {
-  if(u_state != "OFF" && (millis() - motorStartTime) > motorWaitTime) {
+  // Move motor out
+  if(u_state != "OUT" && value == 2) {
+    // Move the motor out
     u_in_1 = false;
-    u_in_2 = false;
-    u_state = "OFF";
+    u_in_2 = true;
+    u_state = "OUT";
   }
 }
 
